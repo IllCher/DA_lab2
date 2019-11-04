@@ -1,11 +1,12 @@
 #include <iostream>
 struct node // структура для представления узлов дерева
 {
-    int key;
+    char key[256];
+    unsigned long value;
     unsigned char height;
     node* left;
     node* right;
-    node(int k) { key = k; left = right = 0; height = 1; }
+    node(char k[256]) { key = k; left = right = 0; height = 1; }
 };
 
 unsigned char height(node* p)
