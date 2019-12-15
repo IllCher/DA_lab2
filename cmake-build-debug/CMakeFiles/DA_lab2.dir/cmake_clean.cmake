@@ -1,9 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/DA_lab2.dir/main.cpp.obj"
-  "DA_lab2.exe"
-  "DA_lab2.exe.manifest"
+  "CMakeFiles/DA_lab2.dir/main.cpp.o"
   "DA_lab2.pdb"
-  "libDA_lab2.dll.a"
+  "DA_lab2"
 )
 
 # Per-language clean rules from dependency scanning.

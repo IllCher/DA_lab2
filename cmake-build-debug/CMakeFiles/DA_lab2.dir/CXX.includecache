@@ -6,11 +6,15 @@
 
 #IncludeRegexTransform: 
 
-D:/Study/Labs2course/DA_lab2/main.cpp
+/mnt/d/Study/Labs2course/DA_lab2/main.cpp
+string.h
+-
+algorithm
+-
+stdio.h
+-
+fstream
+-
 iostream
--
-cstring
--
-cstdlib
 -
 
