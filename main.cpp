@@ -112,9 +112,6 @@ private:
         else if (strcmp(k, node->key) > 0) {
             node->right = Insert(node->right, k, v);
         }
-        else {
-            std::cout << "Exist\n";
-        }
         return Rebalance(node);
     }
 
