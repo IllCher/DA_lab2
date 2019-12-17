@@ -7,14 +7,14 @@
 #IncludeRegexTransform: 
 
 /mnt/d/Study/Labs2course/DA_lab2/main.cpp
+iostream
+-
 string.h
 -
 algorithm
 -
-stdio.h
+cstdio
 -
 fstream
--
-iostream
 -
 

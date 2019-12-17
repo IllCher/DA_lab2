@@ -1,8 +1,8 @@
+#include <iostream>
 #include <string.h>
 #include <algorithm>
-#include <stdio.h>
+#include <cstdio>
 #include <fstream>
-#include <iostream>
 typedef unsigned long long ull;
 struct ans {
     char cmd;
@@ -152,7 +152,8 @@ private:
                 return nullptr;
             }
             if (rightChild == nullptr) {
-                std::cout << "OK\n";
+                std::cout << "OK";
+                std::cout << "\n";
                 delete node;
                 return leftChild;
             }
