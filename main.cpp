@@ -1,8 +1,8 @@
-#include <iostream>
 #include <string.h>
 #include <algorithm>
-#include <cstdio>
+#include <stdio.h>
 #include <fstream>
+#include <iostream>
 typedef unsigned long long ull;
 struct ans {
     char cmd;
@@ -33,20 +33,20 @@ private:
     };
 
     TNode* root;
-    ull Height(const TNode *node) {
+    ull Height(const TNode* node) {
         return node != nullptr ? node->height : 0;
     }
 
-    int Balance(const TNode *node) {
+    int Balance(const TNode* node) {
         return Height(node->left) - Height(node->right);
     }
 
-    void Reheight(TNode *node) {
+    void Reheight(TNode* node) {
         node->height = std::max(Height(node->left), Height(node->right)) + 1;
     }
 
-    TNode *RotateLeft(TNode *a) {
-        TNode *b = a->right;
+    TNode* RotateLeft(TNode* a) {
+        TNode* b = a->right;
         a->right = b->left;
         b->left = a;
         Reheight(a);
@@ -54,8 +54,8 @@ private:
         return b;
     }
 
-    TNode *RotateRight(TNode *a) {
-        TNode *b = a->left;
+    TNode* RotateRight(TNode* a) {
+        TNode* b = a->left;
         a->left = b->right;
         b->right = a;
         Reheight(a);
@@ -63,17 +63,17 @@ private:
         return b;
     }
 
-    TNode *BigRotateLeft(TNode *a) {
+    TNode* BigRotateLeft(TNode* a) {
         a->right = RotateRight(a->right);
         return RotateLeft(a);
     }
 
-    TNode *BigRotateRight(TNode *a) {
+    TNode* BigRotateRight(TNode* a) {
         a->left = RotateLeft(a->left);
         return RotateRight(a);
     }
 
-    TNode *Rebalance(TNode *node) {
+    TNode* Rebalance(TNode* node) {
         if (node == nullptr) {
             return nullptr;
         }
@@ -94,7 +94,7 @@ private:
         return node;
     }
 
-    TNode *Insert(TNode *node, char* k, ull v) {
+    TNode* Insert(TNode* node, char* k, ull v) {
         if (node == nullptr) {
             try {
                 node = new TNode(k, v);
@@ -106,21 +106,25 @@ private:
             std::cout << "OK\n";
             return node;
         }
-        if (strcmp(k, node->key) < 0) {
+        int res = strcmp(k, node->key);
+        if (res < 0) {
             node->left = Insert(node->left, k, v);
         }
-        else if (strcmp(k, node->key) > 0) {
+        else if (res > 0) {
             node->right = Insert(node->right, k, v);
+        }
+        else {
+            std::cout << "Exist\n";
         }
         return Rebalance(node);
     }
 
-    TNode *RemoveMin(TNode *node, TNode *tempNode) {
+    TNode* RemoveMin(TNode* node, TNode* tempNode) {
         if (tempNode->left != nullptr) {
             tempNode->left = RemoveMin(node, tempNode->left);
         }
         else {
-            TNode *rightChild = tempNode->right;
+            TNode* rightChild = tempNode->right;
             strcpy(node->key, tempNode->key);
             node->value = tempNode->value;
             delete tempNode;
@@ -129,20 +133,21 @@ private:
         return Rebalance(tempNode);
     }
 
-    TNode *Remove(TNode *node, char* k) {
+    TNode* Remove(TNode* node, char* k) {
         if (node == nullptr) {
             std::cout << "NoSuchWord\n";
             return nullptr;
         }
-        if (strcmp(k, node->key) < 0) {
+        int res = strcmp(k, node->key);
+        if (res < 0) {
             node->left = Remove(node->left, k);
         }
-        else if (strcmp(k, node->key) > 0) {
+        else if (res > 0) {
             node->right = Remove(node->right, k);
         }
         else {
-            TNode *leftChild = node->left;
-            TNode *rightChild = node->right;
+            TNode* leftChild = node->left;
+            TNode* rightChild = node->right;
             if (leftChild == nullptr && rightChild == nullptr) {
                 std::cout << "OK\n";
                 delete node;
@@ -165,21 +170,23 @@ private:
         return Rebalance(node);
     }
 
-    TNode *Search(TNode *node, char* k) {
+    TNode* Search(TNode* node, char* k) {
         if (node == nullptr) {
             std::cout << "NoSuchWord\n";
             return nullptr;
         }
-        for (TNode *iter = node; iter != nullptr; ) {
-            if (strcmp(k, iter->key) < 0) {
-                iter = iter->left;
+        TNode* tmp = node;
+        while (tmp != nullptr) {
+            int res = strcmp(k, tmp->key);
+            if (res < 0) {
+                tmp = tmp->left;
             }
-            else if (strcmp(k, iter->key) > 0) {
-                iter = iter->right;
+            else if (res > 0) {
+                tmp = tmp->right;
             }
             else {
-                std::cout << "OK: " << iter->value << "\n";
-                return iter;
+                std::cout << "OK: " << tmp->value << "\n";
+                return tmp;
             }
         }
         std::cout << "NoSuchWord\n";
@@ -199,10 +206,10 @@ public:
     void Delete(char* k) {
         root = Remove(root, k);
     }
-    TNode *Find(char* k) {
+    TNode* Find(char* k) {
         return Search(root, k);
     }
-    void TreeDelete(TNode *node) {
+    void TreeDelete(TNode* node) {
         if (node != nullptr) {
             TreeDelete(node->left);
             TreeDelete(node->right);
@@ -243,7 +250,7 @@ public:
         }
     }
 
-    TNode *Load(std::istream &is, const TNode *node) {
+    TNode* Load(std::istream &is, const TNode* node) {
         (void)(node);
         TNode* root = nullptr;
         int keySize = 0;
@@ -346,11 +353,6 @@ bool valid_key(char* key) {
     }
     return true;
 }
-
-
-
-
-
 ans* parser(char* cmd, ans* parsed) {
     char* pch = strtok(cmd," \n");
     while (pch != nullptr) {
