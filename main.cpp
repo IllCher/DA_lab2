@@ -41,51 +41,50 @@ private:
         return Height(node->left) - Height(node->right);
     }
 
-    void Reheight(TNode* node) {
+    void FixHeight(TNode* node) {
         node->height = std::max(Height(node->left), Height(node->right)) + 1;
     }
 
-    TNode* RotateLeft(TNode* a) {
-        TNode* b = a->right;
-        a->right = b->left;
-        b->left = a;
-        Reheight(a);
-        Reheight(b);
-        return b;
+    TNode* RotateLeft(TNode* p) {
+        TNode* q = p->right;
+        p->right = q->left;
+        q->left = p;
+        FixHeight(p);
+        FixHeight(q);
+        return q;
     }
 
-    TNode* RotateRight(TNode* a) {
-        TNode* b = a->left;
-        a->left = b->right;
-        b->right = a;
-        Reheight(a);
-        Reheight(b);
-        return b;
+    TNode* RotateRight(TNode* p) {
+        TNode* q = p->left;
+        p->left = q->right;
+        q->right = p;
+        FixHeight(p);
+        FixHeight(q);
+        return q;
     }
 
-    TNode* BigRotateLeft(TNode* a) {
-        a->right = RotateRight(a->right);
-        return RotateLeft(a);
+    TNode* BigRotateLeft(TNode* p) {
+        p->right = RotateRight(p->right);
+        return RotateLeft(p);
     }
 
-    TNode* BigRotateRight(TNode* a) {
-        a->left = RotateLeft(a->left);
-        return RotateRight(a);
+    TNode* BigRotateRight(TNode* p) {
+        p->left = RotateLeft(p->left);
+        return RotateRight(p);
     }
 
     TNode* Rebalance(TNode* node) {
         if (node == nullptr) {
             return nullptr;
         }
-        Reheight(node);
+        FixHeight(node);
         int balanceRes = Balance(node);
         if (balanceRes == -2) {
             if (Balance(node->right) == 1) {
                 return BigRotateLeft(node);
             }
             return RotateLeft(node);
-        }
-        else if (balanceRes == 2) {
+        } else if (balanceRes == 2) {
             if (Balance(node->left) == -1) {
                 return BigRotateRight(node);
             }
@@ -109,28 +108,25 @@ private:
         int res = strcmp(k, node->key);
         if (res < 0) {
             node->left = Insert(node->left, k, v);
-        }
-        else if (res > 0) {
+        } else if (res > 0) {
             node->right = Insert(node->right, k, v);
-        }
-        else {
+        } else {
             std::cout << "Exist\n";
         }
         return Rebalance(node);
     }
 
-    TNode* RemoveMin(TNode* node, TNode* tempNode) {
-        if (tempNode->left != nullptr) {
-            tempNode->left = RemoveMin(node, tempNode->left);
+    TNode* RemoveMin(TNode* node, TNode* tmp) {
+        if (tmp->left != nullptr) {
+            tmp->left = RemoveMin(node, tmp->left);
+        } else {
+            TNode* rightSubNode = tmp->right;
+            strcpy(node->key, tmp->key);
+            node->value = tmp->value;
+            delete tmp;
+            tmp = rightSubNode;
         }
-        else {
-            TNode* rightChild = tempNode->right;
-            strcpy(node->key, tempNode->key);
-            node->value = tempNode->value;
-            delete tempNode;
-            tempNode = rightChild;
-        }
-        return Rebalance(tempNode);
+        return Rebalance(tmp);
     }
 
     TNode* Remove(TNode* node, char* k) {
@@ -141,30 +137,28 @@ private:
         int res = strcmp(k, node->key);
         if (res < 0) {
             node->left = Remove(node->left, k);
-        }
-        else if (res > 0) {
+        } else if (res > 0) {
             node->right = Remove(node->right, k);
-        }
-        else {
-            TNode* leftChild = node->left;
-            TNode* rightChild = node->right;
-            if (leftChild == nullptr && rightChild == nullptr) {
+        } else {
+            TNode* leftSubNode = node->left;
+            TNode* rightSubNode = node->right;
+            if (leftSubNode == nullptr && rightSubNode == nullptr) {
                 std::cout << "OK\n";
                 delete node;
                 return nullptr;
             }
-            if (rightChild == nullptr) {
+            if (rightSubNode == nullptr) {
                 std::cout << "OK";
                 std::cout << "\n";
                 delete node;
-                return leftChild;
+                return leftSubNode;
             }
-            if (leftChild == nullptr) {
+            if (leftSubNode == nullptr) {
                 std::cout << "OK\n";
                 delete node;
-                return rightChild;
+                return rightSubNode;
             }
-            node->right = RemoveMin(node, rightChild);
+            node->right = RemoveMin(node, rightSubNode);
             std::cout << "OK\n";
         }
         return Rebalance(node);
@@ -180,11 +174,9 @@ private:
             int res = strcmp(k, tmp->key);
             if (res < 0) {
                 tmp = tmp->left;
-            }
-            else if (res > 0) {
+            } else if (res > 0) {
                 tmp = tmp->right;
-            }
-            else {
+            } else {
                 std::cout << "OK: " << tmp->value << "\n";
                 return tmp;
             }
@@ -232,16 +224,19 @@ public:
             i++;
         }
         keySize = i+1;
+        bool hasLeft = false;
+        bool hasRight = false;
+        if (node->left != nullptr) {
+            hasLeft = node->left != nullptr;
+        }
+        if (node->right != nullptr) {
+            hasRight = node->right != nullptr;
+        }
         os.write(reinterpret_cast<char*>(&keySize), sizeof(keySize));
         os.write(node->key, keySize);
         os.write((char*)&node->value, sizeof(node->value));
-
-        bool hasLeft = node->left != nullptr;
-        bool hasRight = node->right != nullptr;
-
         os.write(reinterpret_cast<char*>(&hasLeft), sizeof(hasLeft));
         os.write(reinterpret_cast<char*>(&hasRight), sizeof(hasRight));
-
         if (hasLeft) {
             Save(os, node->left);
         }
@@ -255,35 +250,26 @@ public:
         TNode* root = nullptr;
         int keySize = 0;
         is.read((char*)(&keySize), sizeof(keySize));
-
         if (is.gcount() == 0) {
             return root;
         }
-
         char* key = (char*) malloc(keySize);
-
         key[keySize-1] = '\0';
         is.read(key, keySize);
-
         ull value;
-
-        is.read(reinterpret_cast<char*>(&value), sizeof(value));
-
         bool hasLeft = false;
         bool hasRight = false;
+        is.read(reinterpret_cast<char*>(&value), sizeof(value));
         is.read(reinterpret_cast<char*>(&hasLeft), sizeof(hasLeft));
         is.read(reinterpret_cast<char*>(&hasRight), sizeof(hasRight));
-
         root = new TNode();
         strcpy(root->key, key);
         root->value = value;
-
         if (hasLeft) {
             root->left = Load(is, root);
         } else {
             root->left = nullptr;
         }
-
         if (hasRight) {
             root->right = Load(is, root);
         } else {
@@ -297,8 +283,7 @@ public:
         std::ofstream os{fileName, std::ios::binary | std::ios::out};
         if (os) {
             Save(os, root);
-        }
-        else {
+        } else {
             return false;
         }
         os.close();
@@ -310,15 +295,14 @@ public:
         if (is) {
             TreeDelete(root);
             root = Load(is, nullptr);
-        }
-        else {
+        } else {
             return false;
         }
         is.close();
         return true;
     }
 };
-bool valid_val(char* numb) {
+bool CheckVal(char* numb) {
     if (numb == nullptr) {
         return false;
     }
@@ -337,7 +321,7 @@ bool valid_val(char* numb) {
     return flag;
 }
 
-bool valid_key(char* key) {
+bool CheckKey(char* key) {
     if (key == nullptr) {
         return false;
     }
@@ -353,12 +337,12 @@ bool valid_key(char* key) {
     }
     return true;
 }
-ans* parser(char* cmd, ans* parsed) {
+ans* Parser(char* cmd, ans* parsed) {
     char* pch = strtok(cmd," \n");
     while (pch != nullptr) {
         if (strcmp(pch, "-") == 0) {
             pch = strtok(nullptr, " \n");
-            if (valid_key(pch)) {
+            if (CheckKey(pch)) {
                 parsed->cmd = '-';
                 strcpy(parsed->key, pch);
                 break;
@@ -368,10 +352,10 @@ ans* parser(char* cmd, ans* parsed) {
             }
         } else if (strcmp(pch, "+") == 0) {
             pch = strtok(nullptr, " \n");
-            if (valid_key(pch)) {
+            if (CheckKey(pch)) {
                 strcpy(parsed->key, pch);
                 pch = strtok(nullptr, " \n");
-                if (valid_val(pch)) {
+                if (CheckVal(pch)) {
                     parsed->cmd = '+';
                     parsed->val = stoull(pch);
                     break;
@@ -383,7 +367,7 @@ ans* parser(char* cmd, ans* parsed) {
                 parsed->cmd = -1;
                 break;
             }
-        } else if (valid_key(pch)) {
+        } else if (CheckKey(pch)) {
             parsed->cmd = 'f';
             strcpy(parsed->key, pch);
             break;
@@ -418,7 +402,7 @@ int main() {
     char* command = (char*)malloc(300);
 
     while (std::cin.getline(command, 300)) {
-        parsed = parser(command, parsed);
+        parsed = Parser(command, parsed);
         parsed->key[256] = '\0';
         if (parsed->cmd == '+') {
             tree.Add(parsed->key, parsed->val);
