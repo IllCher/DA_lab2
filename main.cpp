@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 typedef unsigned long long ull;
-struct ans {
+struct TTAns {
     char cmd;
     char* key;
     ull val;
@@ -337,7 +337,7 @@ bool CheckKey(char* key) {
     }
     return true;
 }
-ans* Parser(char* cmd, ans* parsed) {
+TAns* Parser(char* cmd, TAns* parsed) {
     char* pch = strtok(cmd," \n");
     while (pch != nullptr) {
         if (strcmp(pch, "-") == 0) {
@@ -397,7 +397,7 @@ int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
     TAvl tree;
-    ans* parsed =  (ans*)malloc(sizeof(ans));
+    TAns* parsed =  (TAns*)malloc(sizeof(TAns));
     parsed->key = (char*)malloc(257);
     char* command = (char*)malloc(300);
 
