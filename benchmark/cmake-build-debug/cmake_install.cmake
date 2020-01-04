@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/c/Users/Ilya/Desktop/Labs2course/DA_lab2/benchmark
+# Install script for directory: /home/ilya/DA_lab2-master/benchmark
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/c/Users/Ilya/Desktop/Labs2course/DA_lab2/benchmark/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/ilya/DA_lab2-master/benchmark/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
