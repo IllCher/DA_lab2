@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 typedef unsigned long long ull;
-struct TTAns {
+struct TAns {
     char cmd;
     char* key;
     ull val;
